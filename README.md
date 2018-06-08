@@ -28,7 +28,7 @@ Github: [gkweb76](https://github.com/gkweb76/)
 # How to use this image from command line
 First create your volumes:  
 `docker volume create dhcp`  
-`docker volume create dhcp_leases` 
+`docker volume create dhcp_leases`  
 `docker volume inspect dhcp | grep Mount`  
 Grab the host real path, for instance /var/lib/docker/volumes/dhcp/_data (referred as '$DHCP_VOLUME_PATH' below)
 
@@ -39,7 +39,7 @@ Apply a strict chmod so that only root can modify these files:
 `chmod 644 $DHCP_VOLUME_PATH/dhcpd.conf`  
 
 Finally start your container:  
--> modify the `eth0` interface at the end to match your interface name
+-> modify the `eth0` interface at the end to match your interface name  
 `docker container run --rm -v dhcp:/etc/dhcp -v dhcp_leases:/var/lib/dhcp --net=host \`  
 `--read-only=true --tmpfs /run/dhcp -p 67:67/udp --name dhcp gkweb76/dhcp \`  
 `/usr/sbin/dhcpd -4 -d -cf /etc/dhcp/dhcpd.conf eth0`  
