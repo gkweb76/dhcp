@@ -1,0 +1,26 @@
+# Title : Compose file to setup a DHCP container 
+# Command : sudo docker-compose -f compose-dhcp.yml -p <project_name> up
+version: "3.5"
+
+services:
+   dhcp:
+    image: gkweb76/dhcp:latest
+    container_name: dhcp
+    read_only: yes
+    ports: # host_port
+      - 67/udp
+    network_mode: "host" # listen to lan broadcast (dhcp request)
+    userns_mode: "host" # user namespace isolation is not compatible with host network mode
+    volumes:
+      - dhcp:/etc/dhcp # stored as /var/lib/docker/volumes/<project_name>_dhcp
+      - dhcp_leases:/var/lib/dhcp
+      - /etc/localtime:/etc/localtime:ro # keep container clock in sync with host
+    tmpfs:
+      - /run/dhcp # to allow dhcp daemon to create its PID file
+    command: ["/usr/sbin/dhcpd", "-4", "-d", "-cf", "/etc/dhcp/dhcpd.conf", "eth0"] # specify your host LAN interface
+    restart: "unless-stopped"
+
+# Volumes declaration
+volumes:
+  dhcp:
+  dhcp_leases:
